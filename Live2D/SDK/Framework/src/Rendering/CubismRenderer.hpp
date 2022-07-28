@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
@@ -51,6 +51,15 @@ public:
             , G(1.0f)
             , B(1.0f)
             , A(1.0f) {};
+
+        /**
+         * @brief   コンストラクタ
+         */
+        CubismTextureColor(csmFloat32 r, csmFloat32 g, csmFloat32 b, csmFloat32 a)
+            : R(r)
+            , G(g)
+            , B(b)
+            , A(a) {};
 
         /**
          * @brief   デストラクタ

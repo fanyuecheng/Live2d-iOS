@@ -316,12 +316,14 @@ void CubismClippingManager_Metal::SetupClippingContext(CubismModel& model, Cubis
 
                     renderer->DrawMeshMetal(
                         drawCommandBufferData,
-                        model.GetDrawableTextureIndices(clipDrawIndex),
+                        model.GetDrawableTextureIndex(clipDrawIndex),
                         model.GetDrawableVertexIndexCount(clipDrawIndex),
                         model.GetDrawableVertexCount(clipDrawIndex),
                         const_cast<csmUint16*>(model.GetDrawableVertexIndices(clipDrawIndex)),
                         const_cast<csmFloat32*>(model.GetDrawableVertices(clipDrawIndex)),
                         reinterpret_cast<csmFloat32*>(const_cast<Core::csmVector2*>(model.GetDrawableVertexUvs(clipDrawIndex))),
+                        model.GetMultiplyColor(clipDrawIndex),
+                        model.GetScreenColor(clipDrawIndex),
                         model.GetDrawableOpacity(clipDrawIndex),
                         CubismRenderer::CubismBlendMode_Normal,   //クリッピングは通常描画を強制
                         false,   // マスク生成時はクリッピングの反転使用は全く関係がない
@@ -577,8 +579,10 @@ CubismClippingContext::CubismClippingContext(CubismClippingManager_Metal* manage
 
         drawCommandBuffer = CSM_NEW CubismCommandBuffer_Metal::DrawCommandBuffer();
         drawCommandBuffer->CreateVertexBuffer(device, vertexSize, drawableVertexCount * 2);      // Vertices + UVs
-        drawCommandBuffer->CreateIndexBuffer(device, drawableVertexIndexCount);
-
+#warning YC 修改
+        if (drawableVertexIndexCount > 0) {
+            drawCommandBuffer->CreateIndexBuffer(device, drawableVertexIndexCount);
+        }
 
         _clippingCommandBufferList->PushBack(drawCommandBuffer);
     }
@@ -608,8 +612,11 @@ CubismClippingContext::~CubismClippingContext()
     {
         for (csmUint32 i = 0; i < _clippingCommandBufferList->GetSize(); ++i)
         {
-            CSM_DELETE(_clippingCommandBufferList->At(i));
-            _clippingCommandBufferList->At(i) = NULL;
+            if (_clippingCommandBufferList->At(i) != NULL)
+            {
+                CSM_DELETE(_clippingCommandBufferList->At(i));
+                _clippingCommandBufferList->At(i) = NULL;
+            }
         }
 
         CSM_DELETE(_clippingCommandBufferList);
@@ -838,6 +845,8 @@ void CubismShader_Metal::SetupShaderProgram(CubismCommandBuffer_Metal::DrawComma
                                                 , csmFloat32 opacity
                                                 , CubismRenderer::CubismBlendMode colorBlendMode
                                                 , CubismRenderer::CubismTextureColor baseColor
+                                                , CubismRenderer::CubismTextureColor multiplyColor
+                                                , CubismRenderer::CubismTextureColor screenColor
                                                 , csmBool isPremultipliedAlpha, CubismMatrix44 matrix4x4
                                                 , csmBool invertedMask
                                                 , id <MTLRenderCommandEncoder> renderEncoder)
@@ -955,6 +964,8 @@ void CubismShader_Metal::SetupShaderProgram(CubismCommandBuffer_Metal::DrawComma
 
             maskedShaderUniforms.baseColor = (vector_float4){ baseColor.R, baseColor.G, baseColor.B, baseColor.A };
             fragMaskedShaderUniforms.baseColor = (vector_float4){ baseColor.R, baseColor.G, baseColor.B, baseColor.A };
+            fragMaskedShaderUniforms.multiplyColor = (vector_float4){ multiplyColor.R, multiplyColor.G, multiplyColor.B, multiplyColor.A };
+            fragMaskedShaderUniforms.screenColor = (vector_float4){ screenColor.R, screenColor.G, screenColor.B, screenColor.A };
 
             // 転送
             [renderEncoder setVertexBytes:&maskedShaderUniforms length:sizeof(CubismMaskedShaderUniforms) atIndex:MetalVertexInputIndexUniforms];
@@ -975,6 +986,8 @@ void CubismShader_Metal::SetupShaderProgram(CubismCommandBuffer_Metal::DrawComma
                                                          simd::float4 {srcArray[8], srcArray[9], srcArray[10], srcArray[11]},
                                                          simd::float4 {srcArray[12], srcArray[13], srcArray[14], srcArray[15]});
             normalShaderUniforms.baseColor = (vector_float4){ baseColor.R, baseColor.G, baseColor.B, baseColor.A };
+            normalShaderUniforms.multiplyColor = (vector_float4){ multiplyColor.R, multiplyColor.G, multiplyColor.B, multiplyColor.A };
+            normalShaderUniforms.screenColor = (vector_float4){ screenColor.R, screenColor.G, screenColor.B, screenColor.A };
 
             // 転送
             [renderEncoder setVertexBytes:&normalShaderUniforms length:sizeof(CubismNormalShaderUniforms) atIndex:MetalVertexInputIndexUniforms];
@@ -1018,7 +1031,7 @@ CubismShader_Metal::ShaderProgram* CubismShader_Metal::LoadShaderProgram(const c
 
 id<MTLRenderPipelineState> CubismShader_Metal::MakeRenderPipelineState(id<MTLDevice> device, CubismShader_Metal::ShaderProgram* shaderProgram, int blendMode)
 {
-    MTLRenderPipelineDescriptor* renderPipelineDescriptor = [MTLRenderPipelineDescriptor new];
+    MTLRenderPipelineDescriptor* renderPipelineDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
     NSError *error;
 
     renderPipelineDescriptor.vertexFunction = shaderProgram->vertexFunction;
@@ -1072,7 +1085,7 @@ id<MTLRenderPipelineState> CubismShader_Metal::MakeRenderPipelineState(id<MTLDev
 
 id<MTLDepthStencilState> CubismShader_Metal::MakeDepthStencilState(id<MTLDevice> device)
 {
-    MTLDepthStencilDescriptor* depthStencilDescriptor = [MTLDepthStencilDescriptor new];
+    MTLDepthStencilDescriptor* depthStencilDescriptor = [[MTLDepthStencilDescriptor alloc] init];
 
     depthStencilDescriptor.depthCompareFunction = MTLCompareFunctionAlways;
     depthStencilDescriptor.depthWriteEnabled = YES;
@@ -1082,7 +1095,7 @@ id<MTLDepthStencilState> CubismShader_Metal::MakeDepthStencilState(id<MTLDevice>
 
 id<MTLSamplerState> CubismShader_Metal::MakeSamplerState(id<MTLDevice> device, CubismRenderer_Metal* renderer)
 {
-    MTLSamplerDescriptor* samplerDescriptor = [MTLSamplerDescriptor new];
+    MTLSamplerDescriptor* samplerDescriptor = [[MTLSamplerDescriptor alloc] init];
 
     samplerDescriptor.rAddressMode = MTLSamplerAddressModeRepeat;
     samplerDescriptor.sAddressMode = MTLSamplerAddressModeRepeat;
@@ -1130,9 +1143,26 @@ CubismRenderer_Metal::~CubismRenderer_Metal()
 {
     CSM_DELETE_SELF(CubismClippingManager_Metal, _clippingManager);
 
-    for (csmInt32 i = 0; i < _drawableDrawCommandBuffer.GetSize(); ++i)
+    if (_drawableDrawCommandBuffer.GetSize() > 0)
     {
-        CSM_DELETE(_drawableDrawCommandBuffer[i]);
+        for (csmInt32 i = 0; i < _drawableDrawCommandBuffer.GetSize(); ++i)
+        {
+            if (_drawableDrawCommandBuffer[i] != NULL)
+            {
+                CSM_DELETE(_drawableDrawCommandBuffer[i]);
+            }
+        }
+
+        _drawableDrawCommandBuffer.Clear();
+    }
+
+    if (_textures.GetSize() > 0)
+    {
+        _textures.Clear();
+    }
+    if (_offscreenFrameBuffer.IsValid())
+    {
+        _offscreenFrameBuffer.DestroyOffscreenFrame();
     }
 }
 
@@ -1174,8 +1204,10 @@ void CubismRenderer_Metal::Initialize(CubismModel* model)
 
         _drawableDrawCommandBuffer[i] = CSM_NEW CubismCommandBuffer_Metal::DrawCommandBuffer();
 
-//        ここで頂点情報のメモリを確保する
-        _drawableDrawCommandBuffer[i]->CreateVertexBuffer(device, vertexSize, drawableVertexCount);
+        // ここで頂点情報のメモリを確保する  YC 修改
+        if (drawableVertexCount > 0) {
+            _drawableDrawCommandBuffer[i]->CreateVertexBuffer(device, vertexSize, drawableVertexCount);
+        }
 
         if (drawableVertexIndexCount > 0)
         {
@@ -1321,12 +1353,14 @@ void CubismRenderer_Metal::DoDrawModel()
                     SetClippingContextBufferForMask(clipContext);
                     DrawMeshMetal(
                         clipContext->_clippingCommandBufferList->At(index),
-                        GetModel()->GetDrawableTextureIndices(clipDrawIndex),
+                        GetModel()->GetDrawableTextureIndex(clipDrawIndex),
                         GetModel()->GetDrawableVertexIndexCount(clipDrawIndex),
                         GetModel()->GetDrawableVertexCount(clipDrawIndex),
                         const_cast<csmUint16*>(GetModel()->GetDrawableVertexIndices(clipDrawIndex)),
                         const_cast<csmFloat32*>(GetModel()->GetDrawableVertices(clipDrawIndex)),
                         reinterpret_cast<csmFloat32*>(const_cast<Core::csmVector2*>(GetModel()->GetDrawableVertexUvs(clipDrawIndex))),
+                        GetModel()->GetMultiplyColor(clipDrawIndex),
+                        GetModel()->GetScreenColor(clipDrawIndex),
                         GetModel()->GetDrawableOpacity(clipDrawIndex),
                         CubismRenderer::CubismBlendMode_Normal,   //クリッピングは通常描画を強制
                         false, // マスク生成時はクリッピングの反転使用は全く関係がない
@@ -1362,12 +1396,14 @@ void CubismRenderer_Metal::DoDrawModel()
 
         DrawMeshMetal(
             _drawableDrawCommandBuffer[drawableIndex],
-            GetModel()->GetDrawableTextureIndices(drawableIndex),
+            GetModel()->GetDrawableTextureIndex(drawableIndex),
             GetModel()->GetDrawableVertexIndexCount(drawableIndex),
             GetModel()->GetDrawableVertexCount(drawableIndex),
             const_cast<csmUint16*>(GetModel()->GetDrawableVertexIndices(drawableIndex)),
             const_cast<csmFloat32*>(GetModel()->GetDrawableVertices(drawableIndex)),
             reinterpret_cast<csmFloat32*>(const_cast<Core::csmVector2*>(GetModel()->GetDrawableVertexUvs(drawableIndex))),
+            GetModel()->GetMultiplyColor(drawableIndex),
+            GetModel()->GetScreenColor(drawableIndex),
             GetModel()->GetDrawableOpacity(drawableIndex),
             GetModel()->GetDrawableBlendMode(drawableIndex),
             GetModel()->GetDrawableInvertedMask(drawableIndex), // マスクを反転使用するか
@@ -1394,6 +1430,7 @@ void CubismRenderer_Metal::DrawMesh(csmInt32 textureNo, csmInt32 indexCount, csm
 
 void CubismRenderer_Metal::DrawMeshMetal(CubismCommandBuffer_Metal::DrawCommandBuffer* drawCommandBuffer, csmInt32 textureNo, csmInt32 indexCount, csmInt32 vertexCount
                                         , csmUint16* indexArray, csmFloat32* vertexArray, csmFloat32* uvArray
+                                        , const CubismTextureColor& multiplyColor, const CubismTextureColor& screenColor
                                         , csmFloat32 opacity, CubismBlendMode colorBlendMode, csmBool invertedMask, csmInt32 drawableIndex
                                         , id <MTLRenderCommandEncoder> renderEncoder)
 {
@@ -1439,7 +1476,7 @@ void CubismRenderer_Metal::DrawMeshMetal(CubismCommandBuffer_Metal::DrawCommandB
 
     CubismShader_Metal::GetInstance()->SetupShaderProgram(
         drawCommandBuffer, this, drawTexture
-        , opacity, colorBlendMode, modelColorRGBA, IsPremultipliedAlpha()
+        , opacity, colorBlendMode, modelColorRGBA, multiplyColor, screenColor, IsPremultipliedAlpha()
         , GetMvpMatrix(), invertedMask, renderEncoder
     );
 
@@ -1451,8 +1488,11 @@ void CubismRenderer_Metal::DrawMeshMetal(CubismCommandBuffer_Metal::DrawCommandB
     [renderEncoder setRenderPipelineState:pipelineState];
 
     id <MTLBuffer> indexBuffer = drawCommandBuffer->GetIndexBuffer();
-    [renderEncoder drawIndexedPrimitives:MTLPrimitiveTypeTriangle indexCount:indexCount indexType:MTLIndexTypeUInt16
-                             indexBuffer:indexBuffer indexBufferOffset:0];
+#warning YC 修改
+    if (indexBuffer) {
+        [renderEncoder drawIndexedPrimitives:MTLPrimitiveTypeTriangle indexCount:indexCount indexType:MTLIndexTypeUInt16
+                                 indexBuffer:indexBuffer indexBufferOffset:0];
+    }
     // 後処理
     SetClippingContextBufferForDraw(NULL);
     SetClippingContextBufferForMask(NULL);
