@@ -26,6 +26,8 @@
 - (void)didInitialize {
     self.backgroundColor = [UIColor whiteColor];
     self.colorPixelFormat = MTLPixelFormatBGRA8Unorm;
+    self.opaque = NO;
+    self.clearColor = MTLClearColorMake(0, 0, 0, 0);
 }
 
 #pragma mark - Render Loop Control
