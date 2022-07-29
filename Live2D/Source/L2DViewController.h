@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface L2DViewController : UIViewController <L2DMetalViewDelegate>
+@interface L2DViewController : UIViewController <MTKViewDelegate>
  
 @property (nonatomic) float clearColorR;
 @property (nonatomic) float clearColorG;

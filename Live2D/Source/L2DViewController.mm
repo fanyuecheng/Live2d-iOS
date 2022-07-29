@@ -85,7 +85,7 @@
     CubismRenderingInstanceSingleton_Metal *single = [CubismRenderingInstanceSingleton_Metal sharedManager];
     id <MTLDevice> device = [single getMTLDevice];
     _metalView = [[L2DMetalView alloc] initWithFrame:CGRectZero device:device];
-    _metalView.viewDelegate = self;
+    _metalView.delegate = self;
     [single setMetalLayer:(CAMetalLayer *)_metalView.layer];
      
     _commandQueue = [device newCommandQueue];
@@ -218,8 +218,9 @@
     [_background renderImmidiateWithEncoder:encoder];
 }
 
-#pragma mark - MetalViewDelegate
-- (void)drawableResize:(CGSize)size {
+#pragma mark - MTKViewDelegate
+
+- (void)mtkView:(nonnull MTKView *)view drawableSizeWillChange:(CGSize)size  {
     if ([L2DAppManager sharedInstance].modelArray.count == 0) {
         return;
     }
@@ -234,7 +235,7 @@
     [self resizeScreen];
 }
 
-- (void)renderToMetalLayer:(nonnull CALayer *)layer {
+- (void)drawInMTKView:(nonnull MTKView *)view {
     if ([L2DAppManager sharedInstance].modelArray.count == 0) {
         return;
     }
@@ -244,7 +245,7 @@
     id <MTLCommandBuffer> buffer = [_commandQueue commandBuffer];
     id <CAMetalDrawable> drawable = nil;
     if (@available(iOS 13.0, *)) {
-        CAMetalLayer *metalLayer = (CAMetalLayer *)layer;
+        CAMetalLayer *metalLayer = (CAMetalLayer *)view.layer;
         drawable = [metalLayer nextDrawable];
     }
 
@@ -262,7 +263,7 @@
 
     L2DAppManager *appManager = [L2DAppManager sharedInstance];
     [appManager setViewMatrix:_viewMatrix];
-    [appManager onUpdateWithSize:layer.frame.size
+    [appManager onUpdateWithSize:view.frame.size
                           buffer:buffer
                         drawable:drawable
                          texture:_depthTexture];

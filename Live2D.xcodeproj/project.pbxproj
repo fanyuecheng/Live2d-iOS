@@ -60,7 +60,6 @@
 		3324723827E4416100ADD9C9 /* L2DAppSprite.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3324723727E4416100ADD9C9 /* L2DAppSprite.mm */; };
 		3324723B27E4425100ADD9C9 /* L2DAppTextureManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3324723A27E4425100ADD9C9 /* L2DAppTextureManager.mm */; };
 		3324724027E442C400ADD9C9 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 3324723F27E442C400ADD9C9 /* README.md */; };
-		3324724327E4435000ADD9C9 /* L2DMetalBaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3324724227E4435000ADD9C9 /* L2DMetalBaseView.m */; };
 		3324724627E4444F00ADD9C9 /* L2DMetalView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3324724527E4444F00ADD9C9 /* L2DMetalView.m */; };
 		3324724927E444A700ADD9C9 /* L2DTouchManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3324724827E444A700ADD9C9 /* L2DTouchManager.m */; };
 		3324725027E4537D00ADD9C9 /* L2DCsmModel.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3324724F27E4537D00ADD9C9 /* L2DCsmModel.mm */; };
@@ -187,8 +186,6 @@
 		3324723A27E4425100ADD9C9 /* L2DAppTextureManager.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = L2DAppTextureManager.mm; sourceTree = "<group>"; };
 		3324723E27E442C400ADD9C9 /* stb_image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stb_image.h; sourceTree = "<group>"; };
 		3324723F27E442C400ADD9C9 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		3324724127E4435000ADD9C9 /* L2DMetalBaseView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = L2DMetalBaseView.h; sourceTree = "<group>"; };
-		3324724227E4435000ADD9C9 /* L2DMetalBaseView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = L2DMetalBaseView.m; sourceTree = "<group>"; };
 		3324724427E4444F00ADD9C9 /* L2DMetalView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = L2DMetalView.h; sourceTree = "<group>"; };
 		3324724527E4444F00ADD9C9 /* L2DMetalView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = L2DMetalView.m; sourceTree = "<group>"; };
 		3324724727E444A700ADD9C9 /* L2DTouchManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = L2DTouchManager.h; sourceTree = "<group>"; };
@@ -484,8 +481,6 @@
 				3324723727E4416100ADD9C9 /* L2DAppSprite.mm */,
 				3324723927E4425100ADD9C9 /* L2DAppTextureManager.h */,
 				3324723A27E4425100ADD9C9 /* L2DAppTextureManager.mm */,
-				3324724127E4435000ADD9C9 /* L2DMetalBaseView.h */,
-				3324724227E4435000ADD9C9 /* L2DMetalBaseView.m */,
 				3324724427E4444F00ADD9C9 /* L2DMetalView.h */,
 				3324724527E4444F00ADD9C9 /* L2DMetalView.m */,
 				3324724727E444A700ADD9C9 /* L2DTouchManager.h */,
@@ -598,7 +593,6 @@
 				3324718327E43A1100ADD9C9 /* ViewController.mm in Sources */,
 				3324722227E43AE800ADD9C9 /* CubismIdManager.cpp in Sources */,
 				3324720627E43AE800ADD9C9 /* CubismDebug.cpp in Sources */,
-				3324724327E4435000ADD9C9 /* L2DMetalBaseView.m in Sources */,
 				3324721127E43AE800ADD9C9 /* CubismTargetPoint.cpp in Sources */,
 				3324720A27E43AE800ADD9C9 /* CubismMotionQueueManager.cpp in Sources */,
 				3324725927E4624100ADD9C9 /* L2DViewController.mm in Sources */,
