@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
@@ -738,7 +738,7 @@ public:
         for (; ite != _array.End(); ite++)
         {
             Value* v = (*ite);
-            _stringBuffer += indent + "	" + v->GetString(indent + "	") + "\n";
+            _stringBuffer += indent + "    " + v->GetString(indent + "    ") + "\n";
         }
         _stringBuffer += indent + "]\n";
 
@@ -841,7 +841,7 @@ public:
             const csmString& key = (*ite).First;
             Value* v = (*ite).Second;
 
-            _stringBuffer += indent + "	" + key + " : " + v->GetString(indent + "	") + "\n";
+            _stringBuffer += indent + "    " + key + " : " + v->GetString(indent + "    ") + "\n";
             ++ite;
         }
         _stringBuffer += indent + "}\n";

@@ -70,14 +70,17 @@ CubismCommandBuffer_Metal::DrawCommandBuffer::~DrawCommandBuffer()
 {
     if (_vertices != NULL)
     {
+//        [_vertices release];
         _vertices = nil;
     }
     if (_uvs != NULL)
     {
+//        [_uvs release];
         _uvs = nil;
     }
     if (_indices != NULL)
     {
+//        [_indices release];
         _indices = nil;
     }
 }

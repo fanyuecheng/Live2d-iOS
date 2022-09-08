@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
@@ -524,6 +524,11 @@ private:
      */
     void Copy(const csmVector& c)
     {
+        if (c._capacity == 0)
+        {
+            return;
+        }
+
         _size = c._size;
         _capacity = c._capacity;
 

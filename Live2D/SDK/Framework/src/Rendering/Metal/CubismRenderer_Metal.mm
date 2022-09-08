@@ -1031,7 +1031,7 @@ CubismShader_Metal::ShaderProgram* CubismShader_Metal::LoadShaderProgram(const c
 
 id<MTLRenderPipelineState> CubismShader_Metal::MakeRenderPipelineState(id<MTLDevice> device, CubismShader_Metal::ShaderProgram* shaderProgram, int blendMode)
 {
-    MTLRenderPipelineDescriptor* renderPipelineDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
+    MTLRenderPipelineDescriptor* renderPipelineDescriptor = [[MTLRenderPipelineDescriptor alloc] init];// [[[MTLRenderPipelineDescriptor alloc] init] autorelease];
     NSError *error;
 
     renderPipelineDescriptor.vertexFunction = shaderProgram->vertexFunction;
@@ -1085,7 +1085,7 @@ id<MTLRenderPipelineState> CubismShader_Metal::MakeRenderPipelineState(id<MTLDev
 
 id<MTLDepthStencilState> CubismShader_Metal::MakeDepthStencilState(id<MTLDevice> device)
 {
-    MTLDepthStencilDescriptor* depthStencilDescriptor = [[MTLDepthStencilDescriptor alloc] init];
+    MTLDepthStencilDescriptor* depthStencilDescriptor = [[MTLDepthStencilDescriptor alloc] init];// [[[MTLDepthStencilDescriptor alloc] init] autorelease];
 
     depthStencilDescriptor.depthCompareFunction = MTLCompareFunctionAlways;
     depthStencilDescriptor.depthWriteEnabled = YES;
@@ -1095,7 +1095,7 @@ id<MTLDepthStencilState> CubismShader_Metal::MakeDepthStencilState(id<MTLDevice>
 
 id<MTLSamplerState> CubismShader_Metal::MakeSamplerState(id<MTLDevice> device, CubismRenderer_Metal* renderer)
 {
-    MTLSamplerDescriptor* samplerDescriptor = [[MTLSamplerDescriptor alloc] init];
+    MTLSamplerDescriptor* samplerDescriptor = [[MTLSamplerDescriptor alloc] init];//[[[MTLSamplerDescriptor alloc] init] autorelease];
 
     samplerDescriptor.rAddressMode = MTLSamplerAddressModeRepeat;
     samplerDescriptor.sAddressMode = MTLSamplerAddressModeRepeat;
@@ -1204,10 +1204,8 @@ void CubismRenderer_Metal::Initialize(CubismModel* model)
 
         _drawableDrawCommandBuffer[i] = CSM_NEW CubismCommandBuffer_Metal::DrawCommandBuffer();
 
-        // ここで頂点情報のメモリを確保する  YC 修改
-        if (drawableVertexCount > 0) {
-            _drawableDrawCommandBuffer[i]->CreateVertexBuffer(device, vertexSize, drawableVertexCount);
-        }
+        // ここで頂点情報のメモリを確保する
+        _drawableDrawCommandBuffer[i]->CreateVertexBuffer(device, vertexSize, drawableVertexCount);
 
         if (drawableVertexIndexCount > 0)
         {

@@ -48,7 +48,7 @@ csmBool CubismOffscreenFrame_Metal::CreateOffscreenFrame(csmUint32 displayBuffer
             _renderPassDescriptor.renderTargetHeight = displayBufferHeight;
 
             // Set up a texture for rendering to and sampling from
-            MTLTextureDescriptor *texDescriptor = [[MTLTextureDescriptor alloc] init];
+            MTLTextureDescriptor *texDescriptor = [[MTLTextureDescriptor alloc] init];//[[[MTLTextureDescriptor alloc] init] autorelease];
             texDescriptor.textureType = MTLTextureType2D;
             texDescriptor.width = displayBufferWidth;
             texDescriptor.height = displayBufferHeight;
@@ -93,11 +93,13 @@ void CubismOffscreenFrame_Metal::DestroyOffscreenFrame()
 {
     if (_colorBuffer != NULL)
     {
+//        [_colorBuffer release];
         _colorBuffer = NULL;
     }
 
     if (_renderPassDescriptor != NULL)
     {
+//        [_renderPassDescriptor release];
         _renderPassDescriptor = NULL;
     }
 }
