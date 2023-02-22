@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
@@ -32,6 +32,11 @@ CubismRenderer::~CubismRenderer()
 {}
 
 void CubismRenderer::Initialize(Framework::CubismModel* model)
+{
+    Initialize(model, 1);
+}
+
+void CubismRenderer::Initialize(Framework::CubismModel* model, csmInt32 maskBufferCount)
 {
     _model = model;
 }

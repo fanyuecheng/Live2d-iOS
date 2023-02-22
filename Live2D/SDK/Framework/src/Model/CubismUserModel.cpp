@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
@@ -217,7 +217,7 @@ CubismModel* CubismUserModel::GetModel() const
     return _model;
 }
 
-void CubismUserModel::CreateRenderer()
+void CubismUserModel::CreateRenderer(csmInt32 maskBufferCount)
 {
     if (_renderer)
     {
@@ -225,7 +225,7 @@ void CubismUserModel::CreateRenderer()
     }
     _renderer = Rendering::CubismRenderer::Create();
 
-    _renderer->Initialize(_model);
+    _renderer->Initialize(_model, maskBufferCount);
 }
 
 void CubismUserModel::DeleteRenderer()
