@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Proprietary Software license
@@ -179,6 +179,20 @@ extern "C"
      * @return csmMocVersion
      */
     csmApi csmMocVersion csmCallingConvention csmGetMocVersion(const void* address, const unsigned int size);
+
+    /* ----------- *
+     * CONSISTENCY *
+     * ----------- */
+
+    /**
+     * Checks consistency of a moc.
+     *
+     * @param  address  Address of unrevived moc. The address must be aligned to 'csmAlignofMoc'.
+     * @param  size     Size of moc (in bytes).
+     *
+     * @return  '1' if Moc is valid; '0' otherwise.
+     */
+    csmApi int csmCallingConvention csmHasMocConsistency(void* address, const unsigned int size);
 
     /* ------- *
      * LOGGING *
