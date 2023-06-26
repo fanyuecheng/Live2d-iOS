@@ -42,6 +42,13 @@
     NSLog(@"销毁 class:%@", NSStringFromClass([self class]));
 }
 
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    
+    [L2DAppManager.sharedInstance.textureManager releaseTextures];
+}
+
+
 - (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
         [self didInitialize];

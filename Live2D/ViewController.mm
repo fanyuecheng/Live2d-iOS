@@ -76,7 +76,9 @@
                         @"tierbici_2",
                         @"xuefeng",
                         @"z23",
-                        @"z46_2"
+                        @"z46_2",
+                        @"akeno",
+                        @"RACOON01"
         ];
     }
     return _dataSource;

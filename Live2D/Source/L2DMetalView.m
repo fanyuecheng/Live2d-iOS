@@ -32,4 +32,8 @@
     self.colorPixelFormat = MTLPixelFormatBGRA8Unorm;
 }
 
+- (void)dealloc {
+    NSLog(@"销毁 class:%@", NSStringFromClass([self class]));
+}
+
 @end

@@ -35,9 +35,13 @@
                                                 options:NSJSONReadingAllowFragments
                                                   error:nil];
         
-        NSLog(@"%@", _json);
+        NSLog(@"_json = %@", _json);
     }
     return self;
+}
+
+- (void)dealloc {
+    NSLog(@"销毁 class:%@", NSStringFromClass([self class]));
 }
 
 @end
